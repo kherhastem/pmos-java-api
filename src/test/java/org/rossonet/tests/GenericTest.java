@@ -111,30 +111,35 @@ public class GenericTest {
 	private static final Logger logger = Logger.getLogger(GenericTest.class.getName());
 	
 	String myUserId = "78287834963b5b6b54fede5075399220"; //cinzia.ena
-	String myCaseId = "33563077063ea65a38908e6018337372";
+	String myUserName = "cinzia.ena";
+	String myCaseId = "64132547863e68b090edd46031421219";
 	String testUserId = "20252165763e2b5f19ce230007838768";
 	
 	@Test
-	public void addCaseNote() throws Exception  {
+	public void addCaseNote() throws ProcessMakerClient3Exception, RemoteException  
+  {
 		final PmosClient3 client = connect();
 		AddCaseNoteRequest caseNote = new AddCaseNoteRequest();
 		caseNote.setCaseUid(myCaseId);
-		ProcessListRequest processRequest = new ProcessListRequest();
-		ProcessListResponse processResponse = client.processList(processRequest);
-		caseNote.setProcessUid(processResponse.getProcesses()[0].getGuid());
-		caseNote.setTaskUid("1234567890");
+		//ProcessListRequest processRequest = new ProcessListRequest();
+		//ProcessListResponse processResponse = client.processList(processRequest);
+		caseNote.setProcessUid("48035510563d949279032e9063832919");
+		caseNote.setTaskUid("31501366763e66edf1eb9f8012831905");
 		caseNote.setUserUid(myUserId);
 		caseNote.setNote("prova");
 		AddCaseNoteResponse response = client.addCaseNote(caseNote);
+//Result --> You do not have permission to access the cases notes		
 		System.out.println("Result --> "  + response.getMessage());
 		client.disconnect();
 	}
 	
 	@Test
-	public void assignUserToDepartment() throws Exception {
+	public void assignUserToDepartment() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		AssignUserToDepartmentRequest request = new AssignUserToDepartmentRequest();
-		request.setDepartmentId("1234567890");
+		DepartmentListRequest  departmentRequest = new DepartmentListRequest();
+		DepartmentListResponse departmentResponse = client.departmentList(departmentRequest);	
+		request.setDepartmentId(departmentResponse.getDepartments()[0].getGuid());
 		request.setUserId(myUserId);
 		PmResponse response = client.assignUserToDepartment(request);
 		System.out.println("Result --> "  + response.getMessage());
@@ -142,10 +147,12 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void assignUserToGroup() throws Exception {
+	public void assignUserToGroup() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		AssignUserToGroupRequest request = new AssignUserToGroupRequest();
-		request.setGroupId("1234567890");
+		GroupListRequest groupeRequest = new GroupListRequest();
+		GroupListResponse groupResponse = client.groupList(groupeRequest);
+		request.setGroupId(groupResponse.getGroups()[0].getGuid());
 		request.setUserId(myUserId);
 		PmResponse response = client.assignUserToGroup(request);
 		System.out.println("Result --> "  + response.getMessage());
@@ -153,10 +160,10 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void cancelCase() throws Exception{
+	public void cancelCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		CancelCaseRequest request = new CancelCaseRequest();
-		request.setCaseUid(myCaseId);
+		request.setCaseUid("33978127863efb3fa060c89091230139");
 		request.setUserUid(myUserId);
 		request.setDelIndex("1");
 		CancelCaseResponse response = client.cancelCase(request);
@@ -165,7 +172,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void caseList() throws Exception {
+	public void caseList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		CaseListRequest request = new CaseListRequest();
 		CaseListResponse response = client.caseList(request);  
@@ -184,7 +191,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void claimCase() throws ProcessMakerClient3Exception, RemoteException    {
+	public void claimCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		ClaimCaseRequest request = new ClaimCaseRequest();
 		request.setGuid(myCaseId);
@@ -203,10 +210,10 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void createDepartment() throws ProcessMakerClient3Exception, RemoteException{
+	public void createDepartment() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		CreateDepartmentRequest request = new CreateDepartmentRequest();
-		request.setName("Test Department");
+		request.setName("Test Department 2");
 		DepartmentListRequest  listRequest = new DepartmentListRequest();
 		DepartmentListResponse listResponse = client.departmentList(listRequest);
 		DepartmentListStruct firstDepartment = listResponse.getDepartments()[0];
@@ -221,14 +228,14 @@ public class GenericTest {
 	public void createGroup() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		CreateGroupRequest  request = new CreateGroupRequest();
-		request.setName("gruppo di prova");
+		request.setName("gruppo di prova 2");
 		CreateGroupResponse response = client.createGroup(request);
 		System.out.println("Result --> "  + response.getMessage());
 		client.disconnect();
 	}
 	
 	@Test
-	public void createUser() throws ProcessMakerClient3Exception, RemoteException{
+	public void createUser() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		CreateUserRequest request = new CreateUserRequest();
 		request.setUserId("1234567890");
@@ -247,7 +254,7 @@ public class GenericTest {
 	public void deleteCase() throws ProcessMakerClient3Exception, RemoteException  {
 		final PmosClient3 client = connect();
 		DeleteCaseRequest  request = new DeleteCaseRequest();
-		request.setCaseUid(myCaseId);
+		request.setCaseUid("33978127863efb3fa060c89091230139");
 		DeleteCaseResponse response = client.deleteCase(request);
 		System.out.println("Result --> "  + response.getMessage());
 		client.disconnect();
@@ -260,7 +267,7 @@ public class GenericTest {
 		DepartmentListResponse response = client.departmentList(request);	
 		System.out.println("Result --> ");
 		for(DepartmentListStruct elem : response.getDepartments())
-			System.out.println("--> " + elem.getName());
+			System.out.println("--> name: " + elem.getName() + ", Id: " + elem.getGuid());
 		client.disconnect();
 	}
 	
@@ -269,9 +276,6 @@ public class GenericTest {
 		final PmosClient3 client = connect();
 		ExecuteTriggerRequest  request = new ExecuteTriggerRequest();
 		request.setTriggerIndex("0");
-//client.caseList genera ERRORE org.apache.axis2.AxisFault: org.apache.axis2.databinding.ADBException: Unexpected subelement
-		//CaseListStruct currentCase = client.caseList(new CaseListRequest()).getCases()[0];
-		//request.setCaseId(currentCase.getGuid());
 		request.setCaseId(myCaseId);
 		PmResponse response = client.executeTrigger(request);	
 		System.out.println("Result --> " + response.getMessage());
@@ -282,12 +286,20 @@ public class GenericTest {
 	public void getCaseInfo() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		GetCaseInfoRequest  request = new GetCaseInfoRequest();
-//client.caseList genera ERRORE org.apache.axis2.AxisFault: org.apache.axis2.databinding.ADBException: Unexpected subelement
-		//CaseListStruct currentCase = client.caseList(new CaseListRequest()).getCases()[0];
-		//request.setCaseId(currentCase.getGuid());
 		request.setCaseId(myCaseId);
+		request.setDelIndex("0");
 		GetCaseInfoResponse response = client.getCaseInfo(request);
-		System.out.println("Result --> "  + response.getMessage());
+		System.out.println("Result --> ");
+		System.out.println("--> caseId: "  + response.getCaseId());
+		System.out.println("--> creatorUserName: " + response.getCaseCreatorUserName());
+		System.out.println("--> creatorId: "  + response.getCaseCreatorUser());
+		System.out.println("--> caseNumber: "  + response.getCaseNumber());
+		System.out.println("--> caseParallel: "  + response.getCaseParalell());
+		System.out.println("--> caseStatus: "  + response.getCaseStatus());
+		System.out.println("--> createDate: "  + response.getCreateDate());
+		System.out.println("--> processId: "  + response.getProcessId());
+		System.out.println("--> processName: "  + response.getProcessName());
+		System.out.println("--> updateDate: "  + response.getUpdateDate());
 		client.disconnect();
 	}
 		
@@ -315,7 +327,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void getProcessAsXml() throws ProcessMakerClient3Exception, RemoteException{
+	public void getProcessAsXml() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		client.connectRestApi(System.getenv("PMOS_APP_ID"), System.getenv("PMOS_APP_SECRET"), AccessScope.ALL);
 		final ProcessListRequest processListRequest = new ProcessListRequest();
@@ -331,7 +343,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void getProcessAsXmlDocument() throws ProcessMakerClient3Exception, RemoteException{
+	public void getProcessAsXmlDocument() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		client.connectRestApi(System.getenv("PMOS_APP_ID"), System.getenv("PMOS_APP_SECRET"), AccessScope.ALL);
 		final ProcessListRequest processListRequest = new ProcessListRequest();
@@ -355,14 +367,14 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void getSoapEndpoint() throws ProcessMakerClient3Exception{
+	public void getSoapEndpoint() throws ProcessMakerClient3Exception {
 		final PmosClient3 client = connect();
 		System.out.println("Result --> " + ((ProcessMakerClient3)client).getSoapEndpoint());
 		client.disconnect();
 	}
 	
 	@Test
-	public void getUsername() throws ProcessMakerClient3Exception{
+	public void getUsername() throws ProcessMakerClient3Exception {
 		final PmosClient3 client = connect();
 		System.out.println("Result --> " + client.getUsername());
 		client.disconnect();
@@ -393,14 +405,14 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void getWorkspace() throws ProcessMakerClient3Exception{
+	public void getWorkspace() throws ProcessMakerClient3Exception {
 		final PmosClient3 client = connect();
 		System.out.println("Result --> " + client.getWorkspace());
 		client.disconnect();
 	}
 	
 	@Test
-	public void groupList() throws ProcessMakerClient3Exception, RemoteException{
+	public void groupList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		GroupListRequest request = new GroupListRequest();
 		GroupListResponse response = client.groupList(request);
@@ -411,20 +423,27 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void informationUser() throws ProcessMakerClient3Exception, RemoteException{
+	public void informationUser() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		InformationUserRequest request = new InformationUserRequest();
 		request.setUserUid(myUserId);
 		InformationUserResponse response = client.informationUser(request);
 		System.out.println("Result --> " + response.getMessage());
 		for (InformationUserStruct elem : response.getInfo()) {
-			System.out.println("--> " + elem.getFirstname() +" " + elem.getLastname() +" --> " + elem.getUsername() );
+			System.out.println("--> User Id: " + request.getUserUid());
+			System.out.println("--> Name: " + elem.getFirstname());
+			System.out.println("--> Last Name: " + elem.getLastname());
+			System.out.println("--> UserName " + elem.getUsername());
+			System.out.println("--> Department: " + elem.getDepartment());
+			System.out.println("--> Department: " + elem.getDepartment());
+			System.out.println("--> Mail: " + elem.getMail());
+			System.out.println("--> Phone: " + elem.getPhone());
 		}
 		client.disconnect();
 	}
 
 	@Test
-	public void inputDocumentList() throws ProcessMakerClient3Exception, RemoteException{
+	public void inputDocumentList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		InputDocumentListRequest request = new InputDocumentListRequest();
 		request.setCaseId(myCaseId);
@@ -438,7 +457,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void inputDocumentProcessList() throws ProcessMakerClient3Exception, RemoteException{
+	public void inputDocumentProcessList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		InputDocumentProcessListRequest request = new InputDocumentProcessListRequest();
 		request.setProcessId("1234567890");
@@ -451,7 +470,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void newCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void newCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		NewCaseRequest request = new NewCaseRequest();
 		request.setProcessId("1234567890");
@@ -464,7 +483,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void newCaseImpersonate() throws ProcessMakerClient3Exception, RemoteException{
+	public void newCaseImpersonate() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		NewCaseImpersonateRequest request = new NewCaseImpersonateRequest();
 		request.setProcessId("1234567890");
@@ -478,7 +497,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void outputDocumentList() throws ProcessMakerClient3Exception, RemoteException{
+	public void outputDocumentList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		OutputDocumentListRequest request = new OutputDocumentListRequest();
 		 request.setCaseId(myCaseId);
@@ -491,7 +510,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void pauseCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void pauseCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		PauseCaseRequest request = new PauseCaseRequest();
 		request.setCaseUid(myCaseId);
@@ -503,7 +522,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void processList() throws ProcessMakerClient3Exception, RemoteException{
+	public void processList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		ProcessListRequest request = new ProcessListRequest();
 		ProcessListResponse response = client.processList(request);
@@ -514,35 +533,32 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void reassignCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void reassignCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		ReassignCaseRequest request = new ReassignCaseRequest();
 		request.setCaseId(myCaseId);
 		request.setDelIndex("0");
 		request.setUserIdSource(myUserId);
-		request.setUserIdTarget("1234567890");
+		request.setUserIdTarget(testUserId);
 		PmResponse response = client.reassignCase(request);
-// client.reassignCase genera ERRORE Org.apache.axis2.AxisFault: Uncaught TypeError: Argument 2 passed 
-		//to Illuminate\Routing\UrlGenerator::__construct() must be an instance of 
-		//Illuminate\Http\Request, null given, called 
-		//in /opt/processmaker/vendor/laravel/framework/src/Illuminate/Routing/RoutingServiceProvider.php 
-		//on line 62 and defined in /opt/processmaker/vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php:120		
+// Result --> Invalid Case Delegation index for this user    //????		
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
 	
 	@Test
-	public void removeDocument() throws ProcessMakerClient3Exception, RemoteException{
+	public void removeDocument() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		RemoveDocumentRequest request = new RemoveDocumentRequest();
 		request.setAppDocUid("15157666063d94927c61420007779953");
-		RemoveDocumentResponse response = client.removeDocument(request);
+		RemoveDocumentResponse response = client.removeDocument(request); 
+// Result --> This row doesn't exist!    //????		
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
 	
 	@Test
-	public void removeUserFromGroup() throws ProcessMakerClient3Exception, RemoteException{
+	public void removeUserFromGroup() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		GroupListRequest groupRequest = new GroupListRequest();
 		GroupListResponse groupResponse = client.groupList(groupRequest);
@@ -564,7 +580,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void roleList() throws ProcessMakerClient3Exception, RemoteException{
+	public void roleList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		RoleListRequest request = new RoleListRequest();
 		RoleListResponse response = client.roleList(request);
@@ -575,18 +591,18 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void routeCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void routeCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		RouteCaseRequest request = new RouteCaseRequest();
 		request.setCaseId(myCaseId);
-		request.setDelIndex("0");
+		request.setDelIndex("1");
 		RouteCaseResponse response = client.routeCase(request);
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
 	
 	@Test
-	public void sendMessage() throws ProcessMakerClient3Exception, RemoteException{
+	public void sendMessage() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		SendMessageRequest request = new SendMessageRequest();
 		request.setCaseId(myCaseId);
@@ -597,13 +613,13 @@ public class GenericTest {
 		request.setCc("cinzia.ena@gmail.com");
 		request.setBcc("cinzia.ena@gmail.com");
 		PmResponse response = client.sendMessage(request);
-// Result --> The Application row '33563077063ea65a38908e6018337372' doesn't exist!   //?????		
 		System.out.println("Result --> " + response.getMessage());
+//Result --> Template file '/opt/processmaker/shared/sites/demo/mailTemplates/48035510563d949279032e9063832919/Ciao' does not exist.		
 		client.disconnect();
 	}
 	
 	@Test
-	public void sendVariables() throws ProcessMakerClient3Exception, RemoteException{
+	public void sendVariables() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		SendVariablesRequest request = new SendVariablesRequest();
 		request.setCaseId(myCaseId);
@@ -615,7 +631,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void taskCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void taskCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		TaskCaseRequest request = new TaskCaseRequest();
 		request.setCaseId(myCaseId);
@@ -627,7 +643,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void taskList() throws ProcessMakerClient3Exception, RemoteException{
+	public void taskList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		TaskListRequest request = new TaskListRequest();
 		TaskListResponse response = client.taskList(request);
@@ -640,7 +656,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void triggerList() throws ProcessMakerClient3Exception, RemoteException{
+	public void triggerList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		TriggerListRequest request = new TriggerListRequest();
 		TriggerListResponse response = client.triggerList(request);	
@@ -651,7 +667,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void unassignedCaseList() throws ProcessMakerClient3Exception, RemoteException{
+	public void unassignedCaseList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		UnassignedCaseListRequest request = new UnassignedCaseListRequest();
 		UnassignedCaseListResponse response = client.unassignedCaseList(request);	
@@ -664,7 +680,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void unpauseCase() throws ProcessMakerClient3Exception, RemoteException{
+	public void unpauseCase() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		UnpauseCaseRequest request = new UnpauseCaseRequest();
 		request.setCaseUid(myCaseId);
@@ -676,12 +692,30 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void updateUser() throws ProcessMakerClient3Exception, RemoteException{
+	public void updateUser() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		UpdateUserRequest request = new UpdateUserRequest();
 		request.setUserUid(myUserId);
-// PERCHÈ TUTTI I PARAMETRI DEVONO ESSERE ARRAY DI STRINGHE??? 
-	//E PERCHÈ NON SI PUÒ AGGIORNARE UN SOLO PARAMETRO?
+// NOTA l'idea era provare a cambiare solo un valore, esempio l'email o il telefono...	
+		// PERCHÈ TUTTI I PARAMETRI DEVONO ESSERE ARRAY DI STRINGHE??? 
+		//E PERCHÈ NON SI PUÒ AGGIORNARE UN SOLO PARAMETRO?
+		InformationUserRequest userRequest = new InformationUserRequest();
+		request.setUserUid(myUserId);
+		InformationUserResponse userResponse = client.informationUser(userRequest);
+		System.out.println("Result --> " + userResponse.getMessage());
+		for (InformationUserStruct elem : userResponse.getInfo()) {
+			if (elem.getUsername().equals(myUserName)) {
+				request.setDueDate(elem.getDuedate());
+				request.setFirstName(elem.getUsername());
+				request.setFirstName(elem.getFirstname());
+				request.setLastName(elem.getLastname());
+				//request.setPassword(elem.g);
+				//request.setRole(elem.g);
+				request.setStatus(elem.getStatus());
+				request.setUserName(elem.getUsername());
+				request.setUserUid(myUserId);
+			}
+		}
 		String[] emails = {"cinzia.ena@gmail.com"};
 		request.setEmail(emails);
 		UpdateUserResponse response = client.updateUser(request);	
@@ -690,7 +724,7 @@ public class GenericTest {
 	}
 	
 	@Test
-	public void userList() throws ProcessMakerClient3Exception, RemoteException{
+	public void userList() throws ProcessMakerClient3Exception, RemoteException {
 		final PmosClient3 client = connect();
 		UserListRequest request = new UserListRequest();
 		UserListResponse response = client.userList(request);	
@@ -732,7 +766,7 @@ public class GenericTest {
 		UserListResponse response = client.userList(request);	
 		UserListStruct user = null;
 		for (UserListStruct elem : response.getUsers())
-			if (elem.getName().equals(userId))
+			if (elem.getGuid().equals(userId))
 				user = elem;
 		return user;
 	}
