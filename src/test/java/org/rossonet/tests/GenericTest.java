@@ -105,6 +105,7 @@ import net.rossonet.pmos.client3.generated.ProcessMakerServiceStub.UserListRespo
 import net.rossonet.pmos.client3.generated.ProcessMakerServiceStub.UserListStruct;
 import net.rossonet.pmos.client3.generated.ProcessMakerServiceStub.VariableListNameStruct;
 import net.rossonet.pmos.client3.generated.ProcessMakerServiceStub.VariableListStruct;
+import net.rossonet.pmos.client3.generated.ProcessMakerServiceStub.VariableStruct;
 import net.rossonet.pmos.client3.rest.ProcessMakerRestClient.AccessScope;
 
 public class GenericTest {
@@ -120,11 +121,9 @@ public class GenericTest {
   {
 		final PmosClient3 client = connect();
 		AddCaseNoteRequest caseNote = new AddCaseNoteRequest();
-		caseNote.setCaseUid(myCaseId);
-		//ProcessListRequest processRequest = new ProcessListRequest();
-		//ProcessListResponse processResponse = client.processList(processRequest);
+		caseNote.setCaseUid("10271961563e68c1aa27d47070711714");
 		caseNote.setProcessUid("48035510563d949279032e9063832919");
-		caseNote.setTaskUid("31501366763e66edf1eb9f8012831905");
+		caseNote.setTaskUid("16822461063e671ff3a1a92011247199");
 		caseNote.setUserUid(myUserId);
 		caseNote.setNote("prova");
 		AddCaseNoteResponse response = client.addCaseNote(caseNote);
@@ -385,10 +384,15 @@ public class GenericTest {
 		final PmosClient3 client = connect();
 		GetVariablesRequest  request = new GetVariablesRequest();
 		request.setCaseId(myCaseId);
-// client.getVariables causa ERRORE Unable to sendViaPost to url[https://processi.bottegaio.net/sysdemo/en/neoclassic/services/soap2]
-	//org.apache.axis2.AxisFault: variables cannot be null!!		
+		VariableStruct var1 = new VariableStruct();
+		VariableStruct var2 = new VariableStruct();
+		var1.setName("indirizzo");
+		var2.setName("interno");
+		VariableStruct[] variables = {var1 , var2};
+		request.setVariables(variables );	
 		GetVariablesResponse response = client.getVariables(request);	
 		System.out.println("Result --> " + response.getMessage());
+// Result --> 0variables sent		
 		client.disconnect();
 	}
 	
@@ -399,8 +403,9 @@ public class GenericTest {
 		request.setCaseId(myCaseId);
 		GetVariablesNamesResponse response = client.getVariablesNames(request);	
 		System.out.println("Result --> " + client.getVariablesNames(request) + ":");
-		for (VariableListNameStruct elem : response.getVariables()) 
+		for (VariableListNameStruct elem : response.getVariables()) {
 			System.out.println("--> " + elem.getName());
+		}
 		client.disconnect();
 	}
 	
@@ -475,9 +480,16 @@ public class GenericTest {
 		NewCaseRequest request = new NewCaseRequest();
 		request.setProcessId("1234567890");
 		request.setTaskId("1234567890");
-		request.setVariables(null);  
-//ERRORE variables cannot be null!! (COME devono essere strutturate le variabili?)
+		VariableListStruct var1 = new VariableListStruct();
+		VariableListStruct var2 = new VariableListStruct();
+		var1.setName("indirizzo");
+		var2.setName("interno");
+		VariableListStruct[] variables = {var1 , var2};
+		request.setVariables(variables);	
 		NewCaseResponse response = client.newCase(request);
+		//ERRORE Unable to sendViaPost to url[https://processi.bottegaio.net/sysdemo/en/neoclassic/services/soap2]
+		//org.apache.axis2.AxisFault: value cannot be null!!
+		//COSA È VALUE?
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
@@ -489,9 +501,16 @@ public class GenericTest {
 		request.setProcessId("1234567890");
 		request.setTaskId("1234567890");
 		request.setUserId(myUserId);
-		request.setVariables(null);  
-//ERRORE variables cannot be null!! (COME devono essere strutturate le variabili?)
+		VariableListStruct var1 = new VariableListStruct();
+		VariableListStruct var2 = new VariableListStruct();
+		var1.setName("indirizzo");
+		var2.setName("interno");
+		VariableListStruct[] variables = {var1 , var2};
+		request.setVariables(variables);	
 		NewCaseImpersonateResponse response = client.newCaseImpersonate(request);
+//ERRORE Unable to sendViaPost to url[https://processi.bottegaio.net/sysdemo/en/neoclassic/services/soap2]
+	//org.apache.axis2.AxisFault: value cannot be null!!
+	//COSA È VALUE?
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
@@ -623,9 +642,16 @@ public class GenericTest {
 		final PmosClient3 client = connect();
 		SendVariablesRequest request = new SendVariablesRequest();
 		request.setCaseId(myCaseId);
-		request.setVariables(null);
+		VariableListStruct var1 = new VariableListStruct();
+		VariableListStruct var2 = new VariableListStruct();
+		var1.setName("indirizzo");
+		var2.setName("interno");
+		VariableListStruct[] variables = {var1 , var2};
+		request.setVariables(variables);	
 		PmResponse response = client.sendVariables(request);
-//ERRORE variables cannot be null!! (COME devono essere strutturate le variabili?)		
+//ERRORE Unable to sendViaPost to url[https://processi.bottegaio.net/sysdemo/en/neoclassic/services/soap2]
+	//org.apache.axis2.AxisFault: value cannot be null!!
+	//COSA È VALUE?		
 		System.out.println("Result --> " + response.getMessage());
 		client.disconnect();
 	}
@@ -697,29 +723,33 @@ public class GenericTest {
 		UpdateUserRequest request = new UpdateUserRequest();
 		request.setUserUid(myUserId);
 // NOTA l'idea era provare a cambiare solo un valore, esempio l'email o il telefono...	
-		// PERCHÈ TUTTI I PARAMETRI DEVONO ESSERE ARRAY DI STRINGHE??? 
-		//E PERCHÈ NON SI PUÒ AGGIORNARE UN SOLO PARAMETRO?
+	// È VOLUTO CHE TUTTI I PARAMETRI DEBBANO ESSERE ARRAY DI STRINGHE E CHE NON SI POSSA AGGIORNARE UN SOLO PARAMETRO?
 		InformationUserRequest userRequest = new InformationUserRequest();
-		request.setUserUid(myUserId);
+		userRequest.setUserUid(myUserId);
 		InformationUserResponse userResponse = client.informationUser(userRequest);
-		System.out.println("Result --> " + userResponse.getMessage());
 		for (InformationUserStruct elem : userResponse.getInfo()) {
 			if (elem.getUsername().equals(myUserName)) {
-				request.setDueDate(elem.getDuedate());
-				request.setFirstName(elem.getUsername());
-				request.setFirstName(elem.getFirstname());
-				request.setLastName(elem.getLastname());
-				//request.setPassword(elem.g);
-				//request.setRole(elem.g);
-				request.setStatus(elem.getStatus());
+				String[] dueDate = {elem.getDuedate()};
+				request.setDueDate(dueDate);
 				request.setUserName(elem.getUsername());
-				request.setUserUid(myUserId);
+				String[] firstName = {elem.getFirstname()};
+				request.setFirstName(firstName);
+				String[] lastName = {elem.getLastname()};
+				request.setLastName(lastName);
+				String[] password = {"12345"};
+				request.setPassword(password);
+				String[] role = {"PROCESSMAKER_OPERATOR"};
+				request.setRole(role);
+				String[] status = {elem.getStatus(), elem.getStatus()};
+				request.setStatus(status);
+				request.setUserName(elem.getUsername());
 			}
 		}
 		String[] emails = {"cinzia.ena@gmail.com"};
 		request.setEmail(emails);
 		UpdateUserResponse response = client.updateUser(request);	
 		System.out.println("Result --> " + response.getMessage());
+// Result --> Invalid data Array		
 		client.disconnect();
 	}
 	
@@ -733,6 +763,7 @@ public class GenericTest {
 			System.out.println("--> userName: " + elem.getName() + ", id: " + elem.getGuid());
 		client.disconnect();
 	}
+	
 	//NOT TEST/////////////////////////////////////////////////////////////
 	
 	@AfterEach
